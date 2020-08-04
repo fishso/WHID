@@ -1168,6 +1168,28 @@ void loop() {
           f.println(SerialEXFIL);
           f.close();
         }
+        else if(cmd == "SerialEXFILRead"){
+          // 只有一个参数：文件名
+          String fileName = Serial.readStringUntil('\n');
+          // 增加延时
+          delay(1000);
+          if(!SPIFFS.exists(fileName)){
+            //DebugPrintln("mydemo.txt not exists.");
+            Serial.print("error:file not exists,exit:" );
+            Serial.println(fileName);
+            return;
+          }
+          
+          File f = SPIFFS.open(fileName, "r");
+          // 增加前后特征，方便判断
+          Serial.print("###filebegin###");
+          while(f.available()){
+            // 通过串口把文件内容写出去
+            Serial.write(f.read());
+          }
+          f.close();
+          Serial.print("###fileEnd###");
+        }
         else if(cmd == "OS"){
           String os = Serial.readStringUntil('\n');
           File f = SPIFFS.open("/OS.txt", "a+");
